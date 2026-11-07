@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VSTEP Reading Practice - Potash & Fossils</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #3b82f6;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --highlight: #fef08a;
+      --correct: #15803d;
+      --wrong: #b91c1c;
+      --review-phase: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 17px;
+    }
+
+    /* Header & Navigation */
+    header {
+      background: white;
+      border-bottom: 2px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .app-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .student-badge {
+      font-size: 0.95rem;
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid #bfdbfe;
+      display: none;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      padding: 8px 18px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      border: 1px solid #cbd5e1;
+      background: #f1f5f9;
+      color: #475569;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 2px 6px rgba(30, 58, 138, 0.25);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .timer-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .timer-display {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--primary);
+      letter-spacing: 1px;
+    }
+
+    .timer-label {
+      font-size: 0.75rem;
+      font-family: sans-serif;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: #64748b;
+    }
+
+    .phase-work { color: #1d4ed8; }
+    .phase-review { color: #ea580c; animation: pulse 1.5s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .btn-submit {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: #15803d;
+    }
+
+    /* Modal Login */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .login-box {
+      background: white;
+      max-width: 460px;
+      width: 100%;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .login-box h2 {
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-size: 1.6rem;
+    }
+
+    .login-box p {
+      color: #64748b;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+      font-family: sans-serif;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-family: inherit;
+      margin-bottom: 20px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .login-box input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-start {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+
+    .btn-start:hover {
+      background: #1e40af;
+    }
+
+    /* Split Screen Layout */
+    .main-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: calc(100vh - 66px);
+      overflow: hidden;
+    }
+
+    .passage-panel {
+      padding: 28px 36px;
+      overflow-y: auto;
+      border-right: 2px solid var(--border);
+      background: white;
+      text-align: justify;
+    }
+
+    .passage-panel h3 {
+      font-size: 1.4rem;
+      color: var(--primary);
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .passage-panel p {
+      margin-bottom: 16px;
+      text-indent: 28px;
+      font-size: 1.05rem;
+      line-height: 1.75;
+    }
+
+    .questions-panel {
+      padding: 28px 36px;
+      overflow-y: auto;
+      background: #f8fafc;
+    }
+
+    .question-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: border-color 0.2s;
+    }
+
+    .question-card.active-q {
+      border-color: var(--primary-light);
+    }
+
+    .q-title {
+      font-weight: bold;
+      color: #0f172a;
+      margin-bottom: 14px;
+      font-size: 1.05rem;
+    }
+
+    .q-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #ffffff;
+      transition: all 0.15s;
+    }
+
+    .option-item:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .option-item.selected {
+      background: #eff6ff;
+      border-color: #3b82f6;
+      font-weight: 600;
+    }
+
+    .option-item input[type="radio"] {
+      margin-top: 4px;
+      accent-color: var(--primary);
+    }
+
+    /* Highlight and Explanations */
+    .evidence-highlight {
+      background-color: var(--highlight);
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid #ca8a04;
+    }
+
+    .evidence-badge {
+      display: inline-block;
+      background: #0284c7;
+      color: white;
+      font-size: 0.75rem;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-right: 4px;
+      vertical-align: middle;
+      font-family: sans-serif;
+      font-weight: bold;
+    }
+
+    .explanation-box {
+      margin-top: 14px;
+      padding: 14px;
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      display: none;
+      font-family: sans-serif;
+      line-height: 1.5;
+    }
+
+    .explanation-box.show {
+      display: block;
+    }
+
+    .explanation-box.wrong {
+      background: #fef2f2;
+      border-left-color: #dc2626;
+    }
+
+    .correct-answer-text {
+      font-weight: bold;
+      color: #16a34a;
+      margin-bottom: 6px;
+    }
+
+    /* Modal Result Summary */
+    .result-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .result-modal.active {
+      display: flex;
+    }
+
+    .result-content {
+      background: white;
+      max-width: 550px;
+      width: 100%;
+      padding: 32px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+      font-family: sans-serif;
+    }
+
+    .result-score {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin: 16px 0;
+    }
+
+    .result-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .stat-val {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #0f172a;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .btn-review {
+      background: var(--primary);
+      color: white;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      .main-container {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+      }
+      .passage-panel {
+        border-right: none;
+        border-bottom: 2px solid var(--border);
+        height: 45vh;
+      }
+      .questions-panel {
+        height: calc(55vh - 66px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Modal -->
+  <div class="login-overlay" id="loginModal">
+    <div class="login-box">
+      <h2>VSTEP READING TEST</h2>
+      <p>Tổng thời gian làm bài: <b>35 phút</b> (30 phút làm bài + 5 phút dò bài)</p>
+      <input type="text" id="studentNameInput" placeholder="Nhập họ và tên của học sinh..." autocomplete="off">
+      <button class="btn-start" onclick="startExam()">BẮT ĐẦU LÀM BÀI</button>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <div class="app-title">VSTEP READING TEST B2</div>
+      <div class="student-badge" id="studentBadge">Thí sinh: -</div>
+      <div class="nav-tabs">
+        <button class="tab-btn active" id="tabBtn1" onclick="switchTab(1)">Bài 1: Potash</button>
+        <button class="tab-btn" id="tabBtn2" onclick="switchTab(2)">Bài 2: Fossils</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="timer-box">
+        <div class="timer-display" id="timerDisplay">35:00</div>
+        <div class="timer-label" id="timerLabel">Giai đoạn làm bài (30m)</div>
+      </div>
+      <button class="btn-submit" onclick="submitExam(false)">NỘP BÀI</button>
+    </div>
+  </header>
+
+  <!-- Main Content: Split Screen Layout -->
+  <main class="main-container">
+    <!-- Cột bên trái: Bài đọc -->
+    <section class="passage-panel" id="passageContainer">
+      <!-- Sẽ được fill bằng JavaScript dựa theo Tab đang chọn -->
+    </section>
+
+    <!-- Cột bên phải: Câu hỏi -->
+    <section class="questions-panel" id="questionsContainer">
+      <!-- Sẽ được fill bằng JavaScript -->
+    </section>
+  </main>
+
+  <!-- Modal Tổng Kết Điểm -->
+  <div class="result-modal" id="resultModal">
+    <div class="result-content">
+      <h2 style="color: #0f172a;">KẾT QUẢ BÀI THI</h2>
+      <p id="resStudentName" style="color: #64748b; margin-top: 4px;"></p>
+      <div class="result-score" id="resScore">0/20</div>
+      <div class="result-stats">
+        <div class="stat-card">
+          <div class="stat-val" id="resCorrect" style="color: #16a34a;">0</div>
+          <div class="stat-label">Số câu đúng</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="resWrong" style="color: #dc2626;">0</div>
+          <div class="stat-label">Số câu sai</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="resTime">00:00</div>
+          <div class="stat-label">Thời gian làm bài</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="resPercent">0%</div>
+          <div class="stat-label">Tỷ lệ chính xác</div>
+        </div>
+      </div>
+      <button class="btn-review" onclick="closeResultModal()">XEM CHI TIẾT ĐÁP ÁN & DẪN CHỨNG</button>
+    </div>
+  </div>
+
+  <script>
+    // DỮ LIỆU ĐỀ THI & BÀI ĐỌC
+    const examData = {
+      passage1: {
+        title: "READING PASSAGE 1: POTASH",
+        textHtml: `
+          <p>Potash (the old name for potassium carbonate) is one of the two alkalis (the other being soda, sodium carbonate) that were used from remote antiquity in the making of glass, and from the early Middle Ages in the making of soap: the former being the product of heating a mixture of alkali and sand, <span id="ev-p1-q31" class="evidence-target">the latter a product of alkali and vegetable oil</span>. Their importance in the communities of colonial North America need <span id="ev-p1-q32" class="evidence-target">hardly be stressed</span>.</p>
+          
+          <p><span id="ev-p1-q34" class="evidence-target">Potash and soda are not interchangeable for all purposes</span>, but for glass- or soap-making <span id="ev-p1-q35" class="evidence-target">either would do</span>. <span id="ev-p1-q33" class="evidence-target">Soda was obtained largely from the ashes of certain Mediterranean sea plants, potash from those of inland vegetation. Hence potash was more familiar to the early European settlers of the North American continent.</span></p>
+
+          <p>The settlement at Jamestown in Virginia was in many ways a microcosm of the economy of colonial North America, and potash was one of its first concerns. It was required for the glassworks, the first factory in the British colonies, and was produced in sufficient quantity to permit the inclusion of potash in the first cargo shipped out of Jamestown. The second ship to arrive in the settlement from England included among its passengers experts in potash making.</p>
+
+          <p>The method of making potash was simple enough. <span id="ev-p1-q36" class="evidence-target">Logs was piled up and burned in the open, and the ashes collected. The ashes were placed in a barrel with holes in the bottom, and water was poured over them. The solution draining from the barrel was boiled down in iron kettles. The resulting mass was further heated to fuse the mass into what was called potash.</span></p>
+
+          <p>In North America, potash making quickly became an <span id="ev-p1-q37" class="evidence-target">adjunct</span> to the clearing of land for agriculture, for it was estimated that <span id="ev-p1-q38" class="evidence-target">as much as half the cost of clearing land could be recovered by the sale of potash</span>. Some potash was exported from Maine and New Hampshire in the seventeenth century, but the market turned out to be mainly domestic, consisting mostly of shipments from the northern to the southern colonies. For despite the beginning of the trade at Jamestown and such encouragements as a series of acts to encourage the making of potash, beginning in 1707 in South Carolina, <span id="ev-p1-q39" class="evidence-target">the softwoods in the South proved to be poor sources of the substance</span>.</p>
+        `,
+        mainTopicEvidence: "Toàn bài tập trung phân tích vai trò kinh tế, quy trình sản xuất và tầm quan trọng của bồ tạt (potash) đối với các khu định cư thuộc địa Bắc Mỹ.",
+        questions: [
+          {
+            id: "p1_q31",
+            number: 31,
+            question: "The phrase \"the latter\" in this paragraph refers to",
+            options: ["A. alkali", "B. glass", "C. sand", "D. soap"],
+            correct: "D",
+            evId: "ev-p1-q31",
+            explanation: "Cấu trúc song hành: 'the former' ứng với 'glass' (thủy tinh: kiềm + cát), còn 'the latter' ứng với đối tượng thứ hai được nhắc đến là 'soap' (xà phòng: kiềm + dầu thực vật)."
+          },
+          {
+            id: "p1_q32",
+            number: 32,
+            question: "The word \"stressed\" in this paragraph could be best replaced by",
+            options: ["A. defined", "B. emphasized", "C. adjusted", "D. mentioned"],
+            correct: "B",
+            evId: "ev-p1-q32",
+            explanation: "'need hardly be stressed' mang nghĩa 'hầu như không cần phải nhấn mạnh (bởi vì tầm quan trọng của nó đã quá rõ ràng)'. Do đó 'stressed' đồng nghĩa với 'emphasized'."
+          },
+          {
+            id: "p1_q33",
+            number: 33,
+            question: "It can be inferred from the passage that potash was more common than soda in colonial North America because",
+            options: [
+              "A. the materials needed for making soda were not readily available",
+              "B. making potash required less time than making soda",
+              "C. potash was better than soda for making glass and soap",
+              "D. the colonial glassworks found soda more difficult to use"
+            ],
+            correct: "A",
+            evId: "ev-p1-q33",
+            explanation: "Soda chủ yếu thu được từ tro của cây biển Địa Trung Hải (Mediterranean sea plants), trong khi Bắc Mỹ rất dồi dào thảm thực vật nội địa (inland vegetation) phù hợp làm bồ tạt. Vì vậy nguyên liệu làm soda không có sẵn tại đây."
+          },
+          {
+            id: "p1_q34",
+            number: 34,
+            question: "The word \"interchangeable\" in this paragraph is closest in meaning to",
+            options: ["A. convenient", "B. identifiable", "C. equivalent", "D. advantageous"],
+            correct: "C",
+            evId: "ev-p1-q34",
+            explanation: "'interchangeable' nghĩa là có thể thay thế cho nhau, tương đương về mặt công dụng ('equivalent')."
+          },
+          {
+            id: "p1_q35",
+            number: 35,
+            question: "All of the following statements are true of both potash and soda EXCEPT",
+            options: [
+              "A. They are alkalis.",
+              "B. They are made from sea plants.",
+              "C. They are used in making soap.",
+              "D. They are used in making glass."
+            ],
+            correct: "B",
+            evId: "ev-p1-q35",
+            explanation: "Chỉ có soda là làm từ thực vật biển ('ashes of certain Mediterranean sea plants'), còn bồ tạt (potash) làm từ thực vật đất liền ('inland vegetation'). Cả hai đều là kiềm và dùng làm xà phòng, thủy tinh."
+          },
+          {
+            id: "p1_q36",
+            number: 36,
+            question: "According to this paragraph, all of the following were needed for making potash EXCEPT",
+            options: ["A. wood", "B. fire", "C. sand", "D. water"],
+            correct: "C",
+            evId: "ev-p1-q36",
+            explanation: "Quy trình làm potash dùng thân gỗ (logs/wood), đốt cháy (fire), đổ nước (water) qua tro. 'Sand' (cát) chỉ dùng khi phối trộn với kiềm để nấu thủy tinh, không phải nguyên liệu làm ra potash."
+          },
+          {
+            id: "p1_q37",
+            number: 37,
+            question: "The word \"adjunct\" in this paragraph is closest in meaning to",
+            options: ["A. addition", "B. answer", "C. problem", "D. possibility"],
+            correct: "A",
+            evId: "ev-p1-q37",
+            explanation: "'adjunct to...' nghĩa là phần phụ thêm vào, một hoạt động kèm theo bổ trợ cho việc khai khẩn đất đai ('addition')."
+          },
+          {
+            id: "p1_q38",
+            number: 38,
+            question: "According to the passage, a major benefit of making potash was that",
+            options: [
+              "A. it could be exported to Europe in exchange for other goods",
+              "B. it helped finance the creation of farms",
+              "C. it could be made with a variety of materials",
+              "D. stimulated the development of new ways of glassmaking"
+            ],
+            correct: "B",
+            evId: "ev-p1-q38",
+            explanation: "Bài đọc nêu rõ: 'as much as half the cost of clearing land could be recovered by the sale of potash' (thu lại đến một nửa chi phí khai hoang đất nông nghiệp nhờ bán bồ tạt), tức là tài trợ cho việc lập trang trại."
+          },
+          {
+            id: "p1_q39",
+            number: 39,
+            question: "According to this paragraph, the softwoods in the South posed which of the following problems for southern settles?",
+            options: [
+              "A. The softwoods were not very plentiful.",
+              "B. The softwoods could not be used to build houses.",
+              "C. The softwoods were not very marketable.",
+              "D. The softwoods were not very useful for making potash"
+            ],
+            correct: "D",
+            evId: "ev-p1-q39",
+            explanation: "Dẫn chứng câu cuối bài: 'the softwoods in the South proved to be poor sources of the substance' (gỗ mềm ở miền Nam tỏ ra là nguồn nguyên liệu rất nghèo nàn/kém hiệu quả để làm potash)."
+          },
+          {
+            id: "p1_q40",
+            number: 40,
+            question: "What aspect of potash does the passage mainly discuss?",
+            options: [
+              "A. How it was made",
+              "B. Its value as a product for export",
+              "C. How it differs from other alkalis",
+              "D. Its importance in colonial North America"
+            ],
+            correct: "D",
+            evId: "ev-p1-q32",
+            explanation: "Mục đích toàn bài: Phân tích tầm quan trọng toàn diện của potash tại Bắc Mỹ thời thuộc địa (từ vai trò làm thủy tinh/xà phòng, trợ cấp kinh tế khai hoang đến thương mại thuộc địa)."
+          }
+        ]
+      },
+      passage2: {
+        title: "READING PASSAGE 2: FOSSILS",
+        textHtml: `
+          <p>Anyone who has handled a fossilized bone knows that it is usually not exactly like its modern <span id="ev-p2-q31" class="evidence-target">counterpart</span>, the most obvious difference being that it is often much heavier. Fossils often have the quality of stone rather than of organic materials; and this has led to the use of the term "petrifaction" (to bring about rock). The implication is that bone, and other tissues, have somehow been turned into stone, and this is certainly the explanation given in some texts. But it is wrong interpretation; <span id="ev-p2-q33" class="evidence-target">fossils are frequently so dense because the <span id="ev-p2-q32" class="evidence-target">pores</span> and other spaces in the bone have become filled with minerals taken up from the surrounding sediments</span>. Some fossil bones have all the interstitial spaces filled with foreign minerals, including the marrow cavity, if there is one, while others have taken up but little from their surroundings.</p>
+
+          <p><span id="ev-p2-q34" class="evidence-target">Probably all of the minerals deposited within the bone have been recrystallized from solution by the action of water percolating thru them.</span> <span id="ev-p2-q35" class="evidence-target">The degree of mineralization appears to be determined by the nature of the environment in which the bone was deposited and not by the antiquity of the bone.</span> <span id="ev-p2-q36" class="evidence-target">For example, the black fossil bones that are so common in many parts of Florida are heavily mineralized, but they are only about 20,000 years old, whereas many of the dinosaur bones from western Canada, which are about 75 million years old, are only partially filled in.</span> Under optimum conditions the process of mineralization probably takes thousands rather than millions of years, perhaps considerably less.</p>
+
+          <p>The amount of change that has occurred in fossil bone, even in bone as old as that of dinosaurs, is often remarkably small. We are therefore usually able to see the microscopic structures of the bone, including such fine details as the lacunae where the living bone cells once resided. The natural bone mineral, the <span id="ev-p2-q37" class="evidence-target">hydroxyapatite, is virtually unaltered too - it has the same crystal structure</span> as that of modern bone. Although <span id="ev-p2-q39" class="evidence-target">nothing remains of the original collagen</span>, some of its component amino acids are usually still <span id="ev-p2-q38" class="evidence-target">detectable</span>, together with amino acids of the non-collagen proteins of bone.</p>
+        `,
+        questions: [
+          {
+            id: "p2_q31",
+            number: 31,
+            question: "The word \"counterpart\" in this paragraph is closest in meaning to",
+            options: ["A. species", "B. version", "C. change", "D. material"],
+            correct: "B",
+            evId: "ev-p2-q31",
+            explanation: "'modern counterpart' nghĩa là vật tương ứng/phiên bản thời hiện đại ('version') đối chiếu với xương hóa thạch cổ xưa."
+          },
+          {
+            id: "p2_q32",
+            number: 32,
+            question: "The word \"pores\" in this paragraph is closest in meaning to",
+            options: ["A. joints", "B. tissues", "C. lines", "D. holes"],
+            correct: "D",
+            evId: "ev-p2-q32",
+            explanation: "'pores' là lỗ rỗng, lỗ khí li ti trong xương ('holes')."
+          },
+          {
+            id: "p2_q33",
+            number: 33,
+            question: "Why is fossilized bone heavier than ordinary bone?",
+            options: [
+              "A. Bone tissue solidifies with age.",
+              "B. The marrow cavity gradually fills with water",
+              "C. The organic materials turn to stone",
+              "D. Spaces within the bone fill with minerals."
+            ],
+            correct: "D",
+            evId: "ev-p2-q33",
+            explanation: "Đoạn văn nêu rõ: 'fossils are frequently so dense because the pores and other spaces in the bone have become filled with minerals' (các khoảng trống bên trong xương được lấp đầy bởi khoáng chất)."
+          },
+          {
+            id: "p2_q34",
+            number: 34,
+            question: "What can be inferred about a fossil with a high degree of mineralization?",
+            options: [
+              "A. It was exposed to large amounts of mineral-laden water throughout time.",
+              "B. Mineralization was complete within one year of the animal's death.",
+              "C. Many colorful crystals can be found in such a fossil.",
+              "D. It was discovered in western Canada."
+            ],
+            correct: "A",
+            evId: "ev-p2-q34",
+            explanation: "Quá trình khoáng hóa diễn ra nhờ 'the action of water percolating thru them' (nước thấm qua mang theo dung dịch khoáng tái kết tinh). Do đó, mức độ khoáng hóa cao chứng tỏ hóa thạch đã tiếp xúc nhiều với nguồn nước chứa đầy khoáng chất."
+          },
+          {
+            id: "p2_q35",
+            number: 35,
+            question: "Which of the following factors is most important in determining the extent of mineralization in fossil bones?",
+            options: [
+              "A. The age of fossil",
+              "B. Environmental conditions",
+              "C. The location of the bone in the animal's body.",
+              "D. The type of animal the bone came from"
+            ],
+            correct: "B",
+            evId: "ev-p2-q35",
+            explanation: "Tác giả chỉ rõ: 'The degree of mineralization appears to be determined by the nature of the environment in which the bone was deposited and not by the antiquity of the bone'."
+          },
+          {
+            id: "p2_q36",
+            number: 36,
+            question: "Why does the author compare fossils found in western Canada to those found in Florida?",
+            options: [
+              "A. To prove that a fossil's age cannot be determined by the amount of mineralization.",
+              "B. To discuss the large quantity of fossils found in both places",
+              "C. To suggest that fossils found in both places were the same age.",
+              "D. To explain why scientists are especially interested in Canadian fossils"
+            ],
+            correct: "A",
+            evId: "ev-p2-q36",
+            explanation: "Ví dụ xương ở Florida chỉ 20.000 năm nhưng khoáng hóa rất nặng, còn xương khủng long Canada 75 triệu năm lại chỉ khoáng hóa một phần -> Chứng minh tuổi thọ của hóa thạch không quyết định lượng khoáng hóa."
+          },
+          {
+            id: "p2_q37",
+            number: 37,
+            question: "The word \"it\" in this paragraph refers to",
+            options: ["A. hydroxyapatite", "B. microscopic structure", "C. crystal structure", "D. modern bone"],
+            correct: "A",
+            evId: "ev-p2-q37",
+            explanation: "Câu: 'The natural bone mineral, the hydroxyapatite, is virtually unaltered too - it has the same crystal structure...'. 'it' thay thế trực tiếp cho hydroxyapatite."
+          },
+          {
+            id: "p2_q38",
+            number: 38,
+            question: "The word \"detectable\" in this paragraph is closest in meaning to",
+            options: ["A. sizable", "B. active", "C. moist", "D. apparent"],
+            correct: "D",
+            evId: "ev-p2-q38",
+            explanation: "'detectable' (có thể phát hiện/nhận thấy được) gần nghĩa nhất với 'apparent' (rõ ràng, có thể thấy được)."
+          },
+          {
+            id: "p2_q39",
+            number: 39,
+            question: "Which of the following does NOT survive in fossils?",
+            options: ["A. Non-collagen proteins", "B. Hydroxyapatite", "C. Collagen", "D. Amino acid"],
+            correct: "C",
+            evId: "ev-p2-q39",
+            explanation: "Đoạn 3 viết: 'Although nothing remains of the original collagen...' (Mặc dù không còn gì sót lại của collagen nguyên bản ban đầu)."
+          },
+          {
+            id: "p2_q40",
+            number: 40,
+            question: "What does the passage mainly discuss?",
+            options: [
+              "A. The location of fossils in North America",
+              "B. The composition of fossils",
+              "C. Determining the size and weight of fossils",
+              "D. Procedures for analyzing fossils"
+            ],
+            correct: "B",
+            evId: "ev-p2-q33",
+            explanation: "Chủ đề bao trùm: Phân tích bản chất cấu trúc và thành phần cấu tạo (composition) của xương hóa thạch (sự lắng đọng khoáng chất, hydroxyapatite, biến mất của collagen...)."
+          }
+        ]
+      }
+    };
+
+    let currentTab = 1;
+    let studentName = "";
+    let userAnswers = {};
+    let isSubmitted = false;
+    let totalSeconds = 35 * 60; // 35 phút
+    let timerInterval = null;
+    let elapsedSeconds = 0;
+
+    function startExam() {
+      const nameInput = document.getElementById("studentNameInput");
+      if (!nameInput.value.trim()) {
+        alert("Vui lòng nhập họ và tên của học sinh trước khi bắt đầu!");
+        nameInput.focus();
+        return;
+      }
+      studentName = nameInput.value.trim();
+      document.getElementById("studentBadge").innerText = `Thí sinh: ${studentName}`;
+      document.getElementById("studentBadge").style.display = "inline-block";
+      document.getElementById("loginModal").style.display = "none";
+
+      renderPassage(1);
+      renderQuestions(1);
+      startTimer();
+    }
+
+    function switchTab(tabNum) {
+      currentTab = tabNum;
+      document.getElementById("tabBtn1").classList.toggle("active", tabNum === 1);
+      document.getElementById("tabBtn2").classList.toggle("active", tabNum === 2);
+      renderPassage(tabNum);
+      renderQuestions(tabNum);
+    }
+
+    function renderPassage(tabNum) {
+      const data = tabNum === 1 ? examData.passage1 : examData.passage2;
+      const container = document.getElementById("passageContainer");
+      container.innerHTML = `<h3>${data.title}</h3>` + data.textHtml;
+
+      if (isSubmitted) {
+        // Tự động gắn highlight cho các dẫn chứng
+        data.questions.forEach(q => {
+          const el = document.getElementById(q.evId);
+          if (el) {
+            el.classList.add("evidence-highlight");
+            el.title = `Dẫn chứng cho Câu ${q.number}`;
+          }
+        });
+      }
+    }
+
+    function renderQuestions(tabNum) {
+      const data = tabNum === 1 ? examData.passage1 : examData.passage2;
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
+
+      data.questions.forEach((q, idx) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
+        card.id = `card-${q.id}`;
+
+        const isUserCorrect = isSubmitted && userAnswers[q.id] === q.correct;
+        const isUserWrong = isSubmitted && userAnswers[q.id] && userAnswers[q.id] !== q.correct;
+
+        let optionsHtml = q.options.map(opt => {
+          const optLetter = opt.charAt(0);
+          const isChecked = userAnswers[q.id] === optLetter;
+          let optClass = "option-item";
+          if (isChecked) optClass += " selected";
+          
+          if (isSubmitted) {
+            if (optLetter === q.correct) optClass += " correct-ans-opt";
+            if (isChecked && optLetter !== q.correct) optClass += " wrong-ans-opt";
+          }
+
+          return `
+            <label class="${optClass}" onclick="selectOption('${q.id}', '${optLetter}')">
+              <input type="radio" name="${q.id}" value="${optLetter}" ${isChecked ? 'checked' : ''} ${isSubmitted ? 'disabled' : ''}>
+              <span>${opt}</span>
+            </label>
+          `;
+        }).join("");
+
+        let explanationHtml = "";
+        if (isSubmitted) {
+          explanationHtml = `
+            <div class="explanation-box ${isUserCorrect ? '' : 'wrong'} show">
+              <div class="correct-answer-text">
+                <span class="evidence-badge">Đáp án: ${q.correct}</span>
+                ${userAnswers[q.id] ? (userAnswers[q.id] === q.correct ? '✅ Chính xác' : `❌ Thí sinh chọn: ${userAnswers[q.id]}`) : '⚠️ Chưa trả lời'}
+              </div>
+              <p><b>Giải thích:</b> ${q.explanation}</p>
+              <button onclick="scrollToEvidence('${q.evId}')" style="margin-top:6px; font-size:0.85rem; padding:3px 8px; border:1px solid #0284c7; background:#e0f2fe; color:#0369a1; border-radius:4px; cursor:pointer;">
+                🔍 Xem vị trí dẫn chứng trong bài đọc
+              </button>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="q-title">Question ${q.number}: ${q.question}</div>
+          <div class="q-options">${optionsHtml}</div>
+          ${explanationHtml}
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function selectOption(qId, optLetter) {
+      if (isSubmitted) return;
+      userAnswers[qId] = optLetter;
+      renderQuestions(currentTab);
+    }
+
+    function scrollToEvidence(evId) {
+      const el = document.getElementById(evId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.outline = "3px solid #f59e0b";
+        setTimeout(() => { el.style.outline = "none"; }, 2500);
+      }
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        totalSeconds--;
+        elapsedSeconds++;
+
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        document.getElementById("timerDisplay").innerText = 
+          `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+        // Chuyển giai đoạn dò bài (5 phút cuối: <= 300s)
+        const label = document.getElementById("timerLabel");
+        if (totalSeconds <= 300 && totalSeconds > 0) {
+          label.innerText = "Giai đoạn DÒ BÀI (5 phút cuối)";
+          label.className = "timer-label phase-review";
+          document.getElementById("timerDisplay").style.color = "var(--review-phase)";
+        } else if (totalSeconds > 300) {
+          label.innerText = "Giai đoạn LÀM BÀI (30 phút đầu)";
+          label.className = "timer-label phase-work";
+        }
+
+        if (totalSeconds <= 0) {
+          clearInterval(timerInterval);
+          alert("Đã hết 35 phút làm bài! Hệ thống tự động thu bài của bạn.");
+          submitExam(true);
+        }
+      }, 1000);
+    }
+
+    function submitExam(force = false) {
+      if (isSubmitted) return;
+
+      const answeredCount = Object.keys(userAnswers).length;
+      if (!force && answeredCount < 20) {
+        const confirmSub = confirm(`Bạn mới hoàn thành ${answeredCount}/20 câu. Bạn có chắc muốn nộp bài sớm không?`);
+        if (!confirmSub) return;
+      }
+
+      clearInterval(timerInterval);
+      isSubmitted = true;
+
+      // Tính điểm
+      let correctCount = 0;
+      const allQuestions = [...examData.passage1.questions, ...examData.passage2.questions];
+      allQuestions.forEach(q => {
+        if (userAnswers[q.id] === q.correct) correctCount++;
+      });
+
+      // Hiển thị kết quả trong modal
+      document.getElementById("resStudentName").innerText = `Thí sinh: ${studentName}`;
+      document.getElementById("resScore").innerText = `${correctCount}/20`;
+      document.getElementById("resCorrect").innerText = correctCount;
+      document.getElementById("resWrong").innerText = 20 - correctCount;
+      const elMins = Math.floor(elapsedSeconds / 60);
+      const elSecs = elapsedSeconds % 60;
+      document.getElementById("resTime").innerText = `${String(elMins).padStart(2, '0')}:${String(elSecs).padStart(2, '0')}`;
+      document.getElementById("resPercent").innerText = `${Math.round((correctCount / 20) * 100)}%`;
+
+      document.getElementById("resultModal").classList.add("active");
+
+      // Cập nhật giao diện làm bài sang chế độ review
+      renderPassage(currentTab);
+      renderQuestions(currentTab);
+    }
+
+    function closeResultModal() {
+      document.getElementById("resultModal").classList.remove("active");
+    }
+  </script>
+</body>
+</html>
